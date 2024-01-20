@@ -28,5 +28,3 @@ def att(mod,modd):
     print(modd)
 print(a['d'][0])
 att(a['d'][0])
-
-while a==d:
