@@ -45,10 +45,9 @@ class character:
         while True:
             print('ap를 사용합니다.')
             print(f'남은ap : {self.ap}')
-            cho=input('----------\n선택지의 번호를 입력하시오\n1.힘\n2.민첩\n3.지력\n4.행운\n5.취소\n6.변경사항 저장 후 돌아가기\n----------')
+            cho=input('----------\n선택지의 번호를 입력하시오\n1.힘\n2.민첩\n3.지력\n4.행운\n----------')
             try:
                 cho = int(cho)
-                str,dex,intt,luk
                 if cho == 1:
                     how=int(input('얼마나 올리시겠습니까?'))
                     if how > self.ap:
@@ -57,7 +56,7 @@ class character:
                     self.ap=self.ap-how
                     str=how
                     print(f'힘을 {how}만큼 올립니다.')
-                    cho=input('선택지의 번호를 입력하시오\n1.힘\n2.민첩\n3.지력\n4.행운\n5.취소\n6.변경사항 저장 후 돌아가기')
+                    break
                 elif cho == 2:
                     how=int(input('얼마나 올리시겠습니까?'))
                     if how > self.ap:
@@ -66,7 +65,7 @@ class character:
                     self.ap=self.ap-how
                     dex=how
                     print(f'민첩을 {how}만큼 올립니다.')
-                    cho=input('선택지의 번호를 입력하시오\n1.힘\n2.민첩\n3.지력\n4.행운\n5.취소\n6.변경사항 저장 후 돌아가기')
+                    break
                 elif cho == 3:
                     how=int(input('얼마나 올리시겠습니까?'))
                     if how > self.ap:
@@ -75,7 +74,7 @@ class character:
                     self.ap=self.ap-how
                     intt=how
                     print(f'지력을 {how}만큼 올립니다.')
-                    cho=input('선택지의 번호를 입력하시오\n1.힘\n2.민첩\n3.지력\n4.행운\n5.취소\n6.변경사항 저장 후 돌아가기')
+                    break
                 elif cho == 4:
                     how=int(input('얼마나 올리시겠습니까?'))
                     if how > self.ap:
@@ -84,15 +83,6 @@ class character:
                     self.ap=self.ap-how
                     luk=how
                     print(f'행운을 {how}만큼 올립니다.')
-                    cho=input('선택지의 번호를 입력하시오\n1.힘\n2.민첩\n3.지력\n4.행운\n5.취소\n6.변경사항 저장 후 돌아가기')
-                elif cho == 5:
-                    self.ap=5*self.level-self.str-self.dex-self.int-self.luk+40
-                    break
-                elif cho == 6:
-                    self.str=self.str+str
-                    self.dex=self.dex+dex
-                    self.int=self.int+intt
-                    self.luk=self.luk+luk
                     break
             except ValueError:
                 print('잘못입력하셨습니다.')
