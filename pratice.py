@@ -5,7 +5,7 @@
 # print(5<10)
 # print(not True)
 # name='연탄'
-# animal='개'
+
 # age=4
 # hobby='산책'
 # print('우리집',animal,' ',name,'은 ',age,'살이며 취미는', hobby,'이다')
