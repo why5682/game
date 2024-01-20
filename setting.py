@@ -4,7 +4,6 @@ import math
 exp_table={0:0,1:15}
 for i in range(1,200):
     exp_table[i+1]=int(exp_table[i]+((1.07+0.93*(1/i))*(exp_table[i]-exp_table[i-1])))
-print(exp_table)
 
 class character:
     def __init__(self,name):
@@ -45,7 +44,7 @@ class character:
         while True:
             print('ap를 사용합니다.')
             print(f'남은ap : {self.ap}')
-            cho=input('----------\n선택지의 번호를 입력하시오\n1.힘\n2.민첩\n3.지력\n4.행운\n----------')
+            cho=input('----------\n선택지의 번호를 입력하시오\n1.힘\n2.민첩\n3.지력\n4.행운\n5.저장 후 나가기\n----------')
             try:
                 cho = int(cho)
                 if cho == 1:
@@ -53,36 +52,51 @@ class character:
                     if how > self.ap:
                         print('잘못입력하셨습니다.')
                         cho=5
-                    self.ap=self.ap-how
-                    str=how
-                    print(f'힘을 {how}만큼 올립니다.')
-                    break
+                    else:
+                        self.ap=self.ap-how
+                        self.str=self.str+how
+                        print(f'힘을 {how}만큼 올립니다.')
+                        cho = 5
                 elif cho == 2:
                     how=int(input('얼마나 올리시겠습니까?'))
                     if how > self.ap:
                         print('잘못입력하셨습니다.')
                         cho=5
-                    self.ap=self.ap-how
-                    dex=how
-                    print(f'민첩을 {how}만큼 올립니다.')
-                    break
+                    else:
+                        self.ap=self.ap-how
+                        self.dex=self.dex+how
+                        print(f'민첩을 {how}만큼 올립니다.')
+                        cho = 5
                 elif cho == 3:
                     how=int(input('얼마나 올리시겠습니까?'))
                     if how > self.ap:
                         print('잘못입력하셨습니다.')
                         cho=5
-                    self.ap=self.ap-how
-                    intt=how
-                    print(f'지력을 {how}만큼 올립니다.')
-                    break
+                    else:
+                        self.ap=self.ap-how
+                        self.int=self.int+how
+                        print(f'지력을 {how}만큼 올립니다.')
+                        cho = 5
                 elif cho == 4:
                     how=int(input('얼마나 올리시겠습니까?'))
                     if how > self.ap:
                         print('잘못입력하셨습니다.')
                         cho=5
-                    self.ap=self.ap-how
-                    luk=how
-                    print(f'행운을 {how}만큼 올립니다.')
+                    else:
+                        self.ap=self.ap-how
+                        self.luk=self.luk+how
+                        print(f'행운을 {how}만큼 올립니다.')
+                        cho = 5
+                elif cho == 5:
+                    self.att=self.str*1+self.dex*0.5
+                    self.mana=self.int*2
+                    self.acc=self.dex*1+self.str*0.5  #명중요구치와 비교
+                    self.avo=self.luk*1    #회피율함수 필요, 몬스터의 명중치를 구현해야함
+                    self.defe=1-(1/(self.str*1))   #퍼센트로 데미지 감소(방어율), 마딜은 고정딜로 할 생각
+                    self.crit=self.dex*0.5
+                    self.crid=self.luk*1
+                    self.hp=int(math.log(self.level)*(30+self.level*(5+0.5*self.str+0.25*self.dex+0.125*(self.int+self.luk))))+50
+                    self.mp=int(math.log(self.level)*(30+self.level*(5+0.5*self.int+0.25*self.luk+0.125*(self.str+self.dex))))+50
                     break
             except ValueError:
                 print('잘못입력하셨습니다.')
@@ -107,29 +121,10 @@ class character:
         print('능력치')
         print(f'hp : {self.hp_now} / {self.hp}')
         print(f'mp : {self.mp_now} / {self.mp}')
-        print(f'명중치 : {self.acc}')
-        print(f'방어율 : {self.defe}')
-        print(f'크리티컬 확률 : {self.crit}')
+        print(f'명중치 : {round(self.acc,2)}')
+        print(f'방어율 : {round(self.defe,2)}%')
+        print(f'크리티컬 확률 : {self.crit}%')
         print('-'*10)
-
-    def status(self):
-        self.name=self.name
-        self.exp=self.exp
-        self.str=self.str
-        self.dex=self.dex
-        self.int=self.int
-        self.luk=self.luk
-        self.level= 1
-        self.att=self.str*1+self.dex*0.5
-        self.mana=self.int*2
-        self.acc=self.dex*1+self.str*0.5  #명중요구치와 비교
-        self.avo=self.luk*1    #회피율함수 필요, 몬스터의 명중치를 구현해야함
-        self.defe=1-(1/(self.str*1))   #퍼센트로 데미지 감소(방어율), 마딜은 고정딜로 할 생각
-        self.crit=self.dex*1
-        self.crid=self.luk*1
-        self.pei=0  #관통, 방어력 무시, 0~1의 값
-        self.hp=int(math.log(self.level)*(30+self.level*(5+0.5*self.str+0.25*self.dex+0.125*(self.int+self.luk))))+50
-        self.mp=int(math.log(self.level)*(30+self.level*(5+0.5*self.int+0.25*self.luk+0.125*(self.str+self.dex))))+50
 
     def hit(self,req_acc):
         hit=self.acc >= req_acc
@@ -157,10 +152,11 @@ class character:
 
 player=character('df')
 
-for i in range(10):
+for i in range(1):
     player.leveling(2000)
     print(player.level)
     player.show_exp()
     player.show_status()
     input()
 player.ap_use()
+player.show_status()
