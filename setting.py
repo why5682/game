@@ -90,7 +90,6 @@ class character:
             self.str+=how
             print(f'힘을 {how}만큼 올립니다.')
         elif cho == 2:
-            
             self.str += how
             print(f'민첩을 {how}만큼 올립니다.')
         elif cho == 3:
@@ -112,15 +111,16 @@ class character:
         self.update_status()
 
     def show_exp(self):
-        print("╔" + "═" * (len(str(self.exp-exp_table[self.level-1]))+len(str(exp_table[self.level]-exp_table[self.level-1])) + 28) + "╗")
+        print('='*10)
         print(f'  현재 경험치 / 경험치 : {self.exp-exp_table[self.level-1]} / {exp_table[self.level]-exp_table[self.level-1]}')
-        print("╚" + "═" * (len(str(self.exp-exp_table[self.level-1]))+len(str(exp_table[self.level]-exp_table[self.level-1])) + 28) + "╝")
+        print('='*10)
 
     def show_status(self):
         self.update_status()
         print('-'*10)
         print(f'이름 : {self.name}')
         print(f'레벨 : {self.level}')
+        self.show_exp()
         print('-'*10)
         print('스탯창')
         print(f'힘 : {self.str}')
@@ -162,10 +162,3 @@ class character:
             return mon_att
         else:
             mon_att=mon_att*(1-self.defe)
-
-player=character('df')
-player.exp+=10000000
-player.show_exp()
-player.show_status()
-player.ap_use()
-player.show_status()
