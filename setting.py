@@ -158,7 +158,27 @@ class character:
         return avo
 
     def injury(self,mon_att,att_type_mana):
+        mon_att=mon_att-random.randint(0,int(mon_att/4))
         if att_type_mana == True:
             return mon_att
         else:
             mon_att=mon_att*(1-self.defe)
+
+class monster:
+    def __init__(self,list):
+        self.name=list[0]
+        self.mon_level=list[1]
+        self.mon_hp=list[2]
+        self.mon_att=list[3]
+        self.mon_acc=list[4]
+        self.req_acc=list[5]
+        self.mon_defe=float(list[6])   #0~1값
+        self.gain_exp=list[7]
+        self.mon_skill=list[8]  #t or f
+
+monster_book=(('달팽이',1,30,10,5,5,0,5,False),('파란달팽이',2,50,15,5,7,0,7,False))
+encount=monster(monster_book[0])
+
+#class skill:
+
+#class item:
