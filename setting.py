@@ -5,7 +5,12 @@ import pandas as pd
 exp_table={0:0,1:15}
 for i in range(1,200):
     exp_table[i+1]=int(exp_table[i]+((1.05+2*(1/i))*(exp_table[i]-exp_table[i-1]))) #i:n 의 의미 i레벨 에서 다음레벨로 가려면 n만큼의 exp가 필요하다
-print(exp_table)
+
+monster_book={
+    '달팽이':(1,30,10,1,5,10,0,5, False),
+    '파란달팽이':(3,50,20,1,8,12,0.01,7,False),
+    '빨간달팽이':(5,120,100,1.5,10,18,0.02,30,False)
+    }
 class character:
     def __init__(self,name):
         self.name=name
@@ -15,7 +20,7 @@ class character:
         self.int=10
         self.luk=10
         self.level=1
-        self.att=self.str*0.5+self.dex*0.1
+        self.att=self.str*1+self.dex*0.2
         self.mana=self.int*1
         self.speed=1    #10이 최대, 먼저 10채우면 행동 가능
         self.acc=self.dex*1+self.str*0.2  #명중요구치와 비교
@@ -33,7 +38,7 @@ class character:
         self.prof='초보자'
 
     def update_status(self):
-        self.att=self.str*0.5+self.dex*0.1
+        self.att=self.str*1+self.dex*0.2
         self.mana=self.int*1
         self.acc=self.dex*1+self.str*0.2  #명중요구치와 비교
         self.avo=self.luk*1    #회피율함수 필요, 몬스터의 명중치를 구현해야함
@@ -113,20 +118,17 @@ class character:
         print('-'*10)
 
 class monster:
-    monster_book={
-        '달팽이':(1, 120, 45, 1.5, 10, 18,0.02, 30, False)
-        }
-    def __init__(self):
-        self.mon_name='달팽이'
-        self.mon_level=1
-        self.mon_hp=12
-        self.mon_att=45
-        self.mon_speed=2
-        self.mon_acc=10
-        self.mon_avo=1
-        self.mon_defe=0.02   #0~1값
-        self.gain_exp=30
-        self.mon_skill=False  #t or f
+    def __init__(self,name):
+        self.mon_name=name
+        self.mon_level=monster_book[name][0]
+        self.mon_hp=monster_book[name][1]
+        self.mon_att=monster_book[name][2]
+        self.mon_speed=monster_book[name][3]
+        self.mon_acc=monster_book[name][4]
+        self.mon_avo=monster_book[name][5]
+        self.mon_defe=monster_book[name][6]   #0~1값
+        self.gain_exp=monster_book[name][7]
+        self.mon_skill=monster_book[name][8]  #t or f
 
 def hit(character,monster):
     hit=character.acc >= monster.mon_avo
@@ -166,16 +168,13 @@ def judge_turn(character, monster,a=0, b=0 ):
         if a >= 10 and b >= 10 :
             a-=10
             b-=10
-            turn=0 #동시
-            return turn, a, b
+            return 0, a, b
         elif a >= 10:
             a-=10
-            turn=1 #player
-            return turn, a, b
-        elif b > 10:
+            return 1, a, b
+        elif b >= 10:
             b-=10
-            turn=2 #mon
-            return turn, a, b
+            return 2, a, b
     
 def pro_turn(turn,character,monster):
     if turn == 0:
@@ -221,13 +220,13 @@ def pro_turn(turn,character,monster):
     
 def end_turn(character,monster):
     if monster.mon_hp <= 0:
-        print(f'{monster.mon_name}을 물리쳤다.')
-        print(f'{monster.gain_exp}의 경험치를 얻었다.')
+        print(f'{monster.mon_name}을 물리쳤다.\n')
+        print(f'{monster.gain_exp}의 경험치를 얻었다.\n')
         character.exp+=monster.gain_exp
         character.judge_level()
         return True
     if character.hp_now <= 0:
-        print(f'사망했습니다.')
+        print(f'사망했습니다.\n')
         character.hp_now=character.hp
         character.mp_now=character.mp
         return True
@@ -240,23 +239,68 @@ def turn_go(character,monster):
         re=judge_turn(character,monster,a,b)
         a,b=re[1],re[2]
         pro_turn(re[0],character,monster)
-        end_turn(character,monster)
+        input()
     
 def stat_up(character):
     character.judge_level()
     print(f'남은 ap포인트 : {character.ap}')
+    if character.ap == 0:
+        print('남은 ap포인트가 없습니다.\n')
+        return
+
     while True:
-        ans=input('무엇을 올립니까?\n1.힘\n2.민첩\n3.지력\n4.행운')
+        ans = input('무엇을 올립니까?\n1.힘\n2.민첩\n3.지력\n4.행운\n5.취소\n : ')
+        
         try:
-            int(ans)
+            ans = int(ans)
+
+            if ans in [1, 2, 3, 4, 5]:
+                if ans == 5:
+                    return
+
+                while True:
+                    how = input('얼마나 올립니까?\n')
+
+                    try:
+                        how = int(how)
+                        if how <= character.ap:
+                            if ans == 1:
+                                character.str_up(how)
+                            elif ans == 2:
+                                character.dex_up(how)
+                            elif ans == 3:
+                                character.int_up(how)
+                            elif ans == 4:
+                                character.luk_up(how)
+
+                            character.update_status()
+                            return  # Exit the function after successful stat increase
+
+                        print('잘못된 입력입니다.')
+                    except ValueError:
+                        print('잘못된 입력입니다.')
+
+                print('잘못된 입력입니다.')
+            else:
+                print('잘못된 입력입니다.')
+        except ValueError:
+            print('잘못된 입력입니다.')
 
 playe=character('eheh')
 
-for i in range(15):
-    encount=monster()
+for i in range(30):
+    encount=monster('달팽이')
+    playe.show_status()
     turn_go(playe,encount)
-    input()
+    stat_up(playe)
+    playe.show_status()
 
+for i in range(30):
+    encount=monster('파란달팽이')
+    playe.show_status()
+    turn_go(playe,encount)
+    stat_up(playe)
+    playe.show_status()
 #class skill:
 
 #class item:
