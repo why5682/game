@@ -32,8 +32,34 @@ class character:
         self.sp=0
         self.prof='초보자'
 
-    def update_status(self):
+    def load(self,dic):
+        self.exp=dic['exp']
+        self.level=dic['level']
         self.judge_level()
+        self.str=dic['str']
+        self.dex=dic['dex']
+        self.luk=dic['luk']
+        self.int=dic['int']
+        self.hp_now=dic['hp_now']
+        self.mp_now=dic['mp_now']
+        self.speed=dic['speed']
+        self.pei=dic['pei']
+        self.ap=dic['ap']
+        self.sp=dic['sp']
+        self.prof=dic['prof']
+        self.att=dic['att']
+        self.mana=dic['mana']
+        self.acc=dic['acc']
+        self.avo=dic['avo']
+        self.defe=dic['defe']
+        self.crit=dic['crit']
+        self.crid=dic['crid']
+        self.prof=dic['prof']
+        self.hp=dic['hp']
+        self.mp=dic['mp']
+        self.update_status()
+
+    def update_status(self):
         self.att=self.str*0.5+self.dex*0.1
         self.mana=self.int*1
         self.acc=self.dex*1+self.str*0.2  #명중요구치와 비교
@@ -43,18 +69,20 @@ class character:
         self.crid=self.luk*1
         self.hp=int(math.log(self.level)*(30+self.level*(5+0.5*self.str+0.25*self.dex+0.125*(self.int+self.luk))))+50
         self.mp=int(math.log(self.level)*(30+self.level*(5+0.5*self.int+0.25*self.luk+0.125*(self.str+self.dex))))+50
+        self.ap=5*self.level-self.str-self.dex-self.int-self.luk+40
+        self.sp=3*self.level        #찍은 스킬레벨 빼줘야 함
 
     def judge_level(self):
-        for i in range(1,200):
+        for i in range(200):
             if exp_table[i+1] > self.exp and self.exp >= exp_table[i]: #둘다 t일때, i+1이 현재 레벨
                 if self.level != i+1:
                     n=i+1-self.level
-                    print('레벨업'*n)
-                    self.ap=5*(i)-self.str-self.dex-self.int-self.luk+40
-                    self.sp=3*(i)        #찍은 스킬레벨 빼줘야 함
-                    self.hp_now=self.hp
-                    self.mp_now=self.mp
+                    print('레벨업\n'*n)
+                    self.level=i+1
+                    self.hp_now=int(math.log(self.level)*(30+self.level*(5+0.5*self.str+0.25*self.dex+0.125*(self.int+self.luk))))+50
+                    self.mp_now=int(math.log(self.level)*(30+self.level*(5+0.5*self.int+0.25*self.luk+0.125*(self.str+self.dex))))+50
                 self.level=i+1
+                self.update_status()
                 break
 
     def ap_use_1(self):
@@ -114,7 +142,7 @@ class character:
         print(f'  현재 경험치 / 경험치 : {self.exp-exp_table[self.level-1]} / {exp_table[self.level]-exp_table[self.level-1]}')
         print('='*10)
 
-    def show_status(self):
+    def show_status(self):  #이것만 해도되네
         self.update_status()
         print('-'*10)
         print(f'이름 : {self.name}')
@@ -149,7 +177,7 @@ class monster:
         self.mon_level=1
         self.mon_hp=12
         self.mon_att=45
-        self.mon_speed=1
+        self.mon_speed=2
         self.mon_acc=10
         self.mon_avo=1
         self.mon_defe=0.02   #0~1값
@@ -157,17 +185,38 @@ class monster:
         self.mon_skill=False  #t or f
 
 class battle(character,monster):    #누구와 전투를 할지 이미 정한 상태
-    def __init__(self,player_dic,encount):
-        super().__init__(player)
-        self.character= character(**player_dic)
-        super().__init__(encount)
+    def __init__(self,player,dic):
+        self.character= character(player)
         self.monster = monster()
         self.player_turn=0
         self.mon_turn=0
+        self.turn=0
         self.battle_end=False
-
-   # def load(self,dic):
-        
+        self.character.exp=dic['exp']
+        self.character.level=dic['level']
+        self.character.judge_level()
+        self.character.str=dic['str']
+        self.character.dex=dic['dex']
+        self.character.luk=dic['luk']
+        self.character.int=dic['int']
+        self.character.hp_now=dic['hp_now']
+        self.character.mp_now=dic['mp_now']
+        self.character.speed=dic['speed']
+        self.character.pei=dic['pei']
+        self.character.ap=dic['ap']
+        self.character.sp=dic['sp']
+        self.character.prof=dic['prof']
+        self.character.att=dic['att']
+        self.character.mana=dic['mana']
+        self.character.acc=dic['acc']
+        self.character.avo=dic['avo']
+        self.character.defe=dic['defe']
+        self.character.crit=dic['crit']
+        self.character.crid=dic['crid']
+        self.character.prof=dic['prof']
+        self.character.hp=dic['hp']
+        self.character.mp=dic['mp']
+        self.character.update_status()
 
     def hit(self):
         hit=self.character.acc >= self.monster.mon_avo
@@ -199,12 +248,13 @@ class battle(character,monster):    #누구와 전투를 할지 이미 정한 �
             return round(mond), False
 
     def judge_turn(self, a, b):
-        for i in range(10):
-            self.player_turn+=a+self.character.speed
-            self.mon_turn+=b+self.monster.mon_speed
+        self.player_turn=a
+        self.mon_turn=b
+        while self.player_turn < 10 and self.mon_turn < 10:
+            self.player_turn+=self.character.speed
+            self.mon_turn+=self.monster.mon_speed
             print(self.player_turn, self.mon_turn)
-            if self.player_turn >= 10 or self.mon_turn >= 10:
-                break
+
         if self.player_turn >= 10 and self.mon_turn >= 10 :
             self.player_turn-=10
             self.mon_turn-=10
@@ -214,7 +264,7 @@ class battle(character,monster):    #누구와 전투를 할지 이미 정한 �
             self.player_turn-=10
             self.turn=1 #player
             return self.turn, self.player_turn, self.mon_turn
-        elif self.mon_turn >= 10:
+        elif self.mon_turn > 10:
             self.mon_turn-=10
             self.turn=2 #mon
             return self.turn, self.player_turn, self.mon_turn
@@ -262,12 +312,14 @@ class battle(character,monster):    #누구와 전투를 할지 이미 정한 �
         if self.monster.mon_hp <= 0:
             print(f'{self.monster.mon_name}을 물리쳤다.')
             print(f'{self.monster.gain_exp}의 경험치를 얻었다.')
-            self.leveling(self.monster.gain_exp)
-            print(self.character.exp)
+            self.character.exp+=self.monster.gain_exp
+            self.character.judge_level()
             self.battle_end=True
             return self.battle_end
         if self.character.hp_now <= 0:
             print(f'사망했습니다.')
+            self.character.hp_now=self.character.hp
+            self.character.mp_now=self.character.mp
             self.battle_end=True
             return self.battle_end
         else:
@@ -277,26 +329,19 @@ class battle(character,monster):    #누구와 전투를 할지 이미 정한 �
     def turn_go(self):
         while self.battle_end == False:
             self.judge_turn(self.player_turn,self.mon_turn)
-            print(self.turn)
             self.pro_turn()
             self.end_turn()
-            input()
-        return self.character.exp, self.character.hp_now
+        return self.character.__dict__
 
-    def leveling(self,gain_exp):
-        self.character.exp+=gain_exp
 
-player=character('eheh')
-player.exp=550
-player.dex=30
-player.show_status()
-player.update_status()
-encount=monster()
-scene=battle(player.__dict__,encount)
-player.exp,player.hp_now=scene.turn_go()
-player.show_status()
+playe=character('eheh')
 
-print(scene.__dict__)
+for i in range(15):
+    encount=monster()
+    i=battle(playe,playe.__dict__)
+    playe.load(i.turn_go())
+    playe.show_status()
+    input()
 
 #class skill:
 
