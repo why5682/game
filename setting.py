@@ -32,33 +32,6 @@ class character:
         self.sp=0
         self.prof='초보자'
 
-    def load(self,dic):
-        self.exp=dic['exp']
-        self.level=dic['level']
-        self.judge_level()
-        self.str=dic['str']
-        self.dex=dic['dex']
-        self.luk=dic['luk']
-        self.int=dic['int']
-        self.hp_now=dic['hp_now']
-        self.mp_now=dic['mp_now']
-        self.speed=dic['speed']
-        self.pei=dic['pei']
-        self.ap=dic['ap']
-        self.sp=dic['sp']
-        self.prof=dic['prof']
-        self.att=dic['att']
-        self.mana=dic['mana']
-        self.acc=dic['acc']
-        self.avo=dic['avo']
-        self.defe=dic['defe']
-        self.crit=dic['crit']
-        self.crid=dic['crid']
-        self.prof=dic['prof']
-        self.hp=dic['hp']
-        self.mp=dic['mp']
-        self.update_status()
-
     def update_status(self):
         self.att=self.str*0.5+self.dex*0.1
         self.mana=self.int*1
@@ -69,8 +42,8 @@ class character:
         self.crid=self.luk*1
         self.hp=int(math.log(self.level)*(30+self.level*(5+0.5*self.str+0.25*self.dex+0.125*(self.int+self.luk))))+50
         self.mp=int(math.log(self.level)*(30+self.level*(5+0.5*self.int+0.25*self.luk+0.125*(self.str+self.dex))))+50
-        self.ap=5*self.level-self.str-self.dex-self.int-self.luk+40
-        self.sp=3*self.level        #찍은 스킬레벨 빼줘야 함
+        self.ap=5*self.level-self.str-self.dex-self.int-self.luk+35
+        self.sp=3*self.level-3        #찍은 스킬레벨 빼줘야 함
 
     def judge_level(self):
         for i in range(200):
@@ -85,57 +58,28 @@ class character:
                 self.update_status()
                 break
 
-    def ap_use_1(self):
-        while True:
-            print('ap를 사용합니다.')
-            print(f'남은ap : {self.ap}')
-            cho=input('----------\n선택지의 번호를 입력하시오\n1.힘\n2.민첩\n3.지력\n4.행운\n5.나가기\n----------\n : ')
-            try:
-                cho = int(cho)
-                if cho in [1,2,3,4,5]:
-                    return cho
-                print('잘못입력하셨습니다.')
-            except ValueError:
-                print('잘못입력하셨습니다.')
-        
-    def ap_use_2(self,cho):
-        while True:
-            if cho == 5:
-                return cho, 0
-            how=input('얼마나 올리시겠습니까? : ')
-            try:
-                how=int(how)
-                if how <= self.ap:
-                    return cho, how
-                print('잘못입력하셨습니다.')
-            except ValueError:
-                    print('잘못입력하셨습니다.')
+    def str_up(self,how):
+        self.ap-=how
+        self.str+=how
+        print(f'힘을 {how}만큼 올려 {self.str}이 되었습니다.\n')
 
-    def ap_use_3(self,cho,how):
-        self.ap-=how 
-        if cho == 1:
-            self.str+=how
-            print(f'힘을 {how}만큼 올립니다.')
-        elif cho == 2:
-            self.str += how
-            print(f'민첩을 {how}만큼 올립니다.')
-        elif cho == 3:
-            self.int+=how
-            print(f'지력을 {how}만큼 올립니다.')
-        elif cho == 4:
-            self.luk+=how
-            print(f'행운을 {how}만큼 올립니다.')
-        elif cho == 5:
-            print('처음으로 돌아갑니다.')
+    def dex_up(self,how):
+        self.ap-=how
+        self.dex+=how
+        print(f'민첩을 {how}만큼 올려 {self.dex}이 되었습니다.\n')
 
-    def ap_use(self):
-        if self.ap == 0:
-            print('남은 ap가 없습니다.')
-            return
-        cho=self.ap_use_1()
-        cho, how=self.ap_use_2(cho)
-        self.ap_use_3(cho,how)
-        self.update_status()
+    def int_up(self,how):
+        self.ap-=how
+        self.int+=how
+        print(f'지능을 {how}만큼 올려 {self.int}이 되었습니다.\n')
+
+    def luk_up(self,how):
+        self.ap-=how
+        self.luk+=how
+        print(f'행운을 {how}만큼 올려 {self.luk}이 되었습니다.\n')
+
+    def hit_by_mon(self,damage):
+        self.hp_now-=damage
 
     def show_exp(self):
         print('='*10)
@@ -184,163 +128,133 @@ class monster:
         self.gain_exp=30
         self.mon_skill=False  #t or f
 
-class battle(character,monster):    #누구와 전투를 할지 이미 정한 상태
-    def __init__(self,player,dic):
-        self.character= character(player)
-        self.monster = monster()
-        self.player_turn=0
-        self.mon_turn=0
-        self.turn=0
-        self.battle_end=False
-        self.character.exp=dic['exp']
-        self.character.level=dic['level']
-        self.character.judge_level()
-        self.character.str=dic['str']
-        self.character.dex=dic['dex']
-        self.character.luk=dic['luk']
-        self.character.int=dic['int']
-        self.character.hp_now=dic['hp_now']
-        self.character.mp_now=dic['mp_now']
-        self.character.speed=dic['speed']
-        self.character.pei=dic['pei']
-        self.character.ap=dic['ap']
-        self.character.sp=dic['sp']
-        self.character.prof=dic['prof']
-        self.character.att=dic['att']
-        self.character.mana=dic['mana']
-        self.character.acc=dic['acc']
-        self.character.avo=dic['avo']
-        self.character.defe=dic['defe']
-        self.character.crit=dic['crit']
-        self.character.crid=dic['crid']
-        self.character.prof=dic['prof']
-        self.character.hp=dic['hp']
-        self.character.mp=dic['mp']
-        self.character.update_status()
+def hit(character,monster):
+    hit=character.acc >= monster.mon_avo
+    if hit == False:
+        hit= 0.5*(character.acc/monster.mon_avo) > random.random()
+    return hit
 
-    def hit(self):
-        hit=self.character.acc >= self.monster.mon_avo
-        if hit == False:
-            hit= 0.5*(self.character.acc/self.monster.mon_avo) > random.random()
-        return hit
+def damage(character,monster):  #몬스터 방어율 기본적으로 0~0.5가 맞을듯, 보스 부터 1이상도 가능하게 하기
+    damage=character.att-random.randint(0,int(character.att/2))
+    damage=damage*(1-(monster.mon_defe*(1-character.pei)))
+    if damage <= 0:
+        damage = 1
+    if character.crit/100 > random.random():
+        damage*=(1+character.crid/100)
+        return round(damage), True
+    return round(damage) , False
 
-    def damage(self):  #몬스터 방어율 기본적으로 0~0.5가 맞을듯, 보스 부터 1이상도 가능하게 하기
-        damage=self.character.att-random.randint(0,int(self.character.att/2))
-        damage=damage*(1-(self.monster.mon_defe*(1-self.character.pei)))
-        if damage <= 0:
-            damage = 1
-        if self.character.crit/100 > random.random():
-            damage*=(1+self.character.crid/100)
-            return round(damage), True
-        return round(damage) , False
+def avoid(character,monster):
+    avoid=1-((1+monster.mon_acc*0.02)/(character.avo*0.02)) #4950이면 99%의 회피율, 어쨋든 100%의 회피율 가능함
+    avo=avoid > random.random()
+    return avo
 
-    def avoid(self):
-        avoid=1-((1+self.monster.mon_acc*0.02)/(self.character.avo*0.02)) #4950이면 99%의 회피율, 어쨋든 100%의 회피율 가능함
-        avo=avoid > random.random()
-        return avo
+def injury(character, monster):
+    mond=monster.mon_att-random.randint(0,int(monster.mon_att/4))
+    if monster.mon_skill == True:
+        return round(mond), True
+    else:
+        mond=monster.mon_att*(1-character.defe)
+        return round(mond), False
 
-    def injury(self):
-        mond=self.monster.mon_att-random.randint(0,int(self.monster.mon_att/4))
-        if self.monster.mon_skill == True:
-            return round(mond), True
-        else:
-            mond=self.monster.mon_att*(1-self.character.defe)
-            return round(mond), False
+def judge_turn(character, monster,a=0, b=0 ):
+    while a < 10 and b < 10:
+        a+=character.speed
+        b+=monster.mon_speed
+        print(a, b)
 
-    def judge_turn(self, a, b):
-        self.player_turn=a
-        self.mon_turn=b
-        while self.player_turn < 10 and self.mon_turn < 10:
-            self.player_turn+=self.character.speed
-            self.mon_turn+=self.monster.mon_speed
-            print(self.player_turn, self.mon_turn)
-
-        if self.player_turn >= 10 and self.mon_turn >= 10 :
-            self.player_turn-=10
-            self.mon_turn-=10
-            self.turn=0 #동시
-            return self.turn, self.player_turn, self.mon_turn
-        elif self.player_turn >= 10:
-            self.player_turn-=10
-            self.turn=1 #player
-            return self.turn, self.player_turn, self.mon_turn
-        elif self.mon_turn > 10:
-            self.mon_turn-=10
-            self.turn=2 #mon
-            return self.turn, self.player_turn, self.mon_turn
+        if a >= 10 and b >= 10 :
+            a-=10
+            b-=10
+            turn=0 #동시
+            return turn, a, b
+        elif a >= 10:
+            a-=10
+            turn=1 #player
+            return turn, a, b
+        elif b > 10:
+            b-=10
+            turn=2 #mon
+            return turn, a, b
     
-    def pro_turn(self):
-        if self.turn == 0:
-            if self.hit() == True:
-                damag,cri=self.damage()
-                self.monster.mon_hp-=damag
-                if cri == True:
-                    print(f'{self.monster.mon_name}{damag}!의 피해를 주었습니다.')
-                else:
-                    print(f'{self.monster.mon_name}에게{damag}의 피해를 주었습니다.')
+def pro_turn(turn,character,monster):
+    if turn == 0:
+        if hit(character,monster) == True:
+            damag,cri=damage(character,monster)
+            monster.mon_hp-=damag
+            if cri == True:
+                print(f'{monster.mon_name}{damag}!의 피해를 주었습니다.')
             else:
-                print('Miss')
-            if self.avoid() == True:
-                print('회피하였습니다.')
-            else:
-                dama,man=self.injury()
-                self.character.hp_now-=dama
-                if man == True:
-                    print(f'{dama}만큼의 마법피해를 입었습니다.')
-                else:
-                    print(f'{dama}만큼의 물리피해를 입었습니다.')
-        elif self.turn == 1:
-            if self.hit() == True:
-                damag,cri=self.damage()
-                self.monster.mon_hp-=damag
-                if cri == True:
-                    print(f'{self.monster.mon_name}{damag}!의 피해를 주었습니다.')
-                else:
-                    print(f'{self.monster.mon_name}에게{damag}의 피해를 주었습니다.')
-        elif self.turn == 2:
-            if self.avoid() == True:
-                print('회피하였습니다.')
-            else:
-                dama,man=self.injury()
-                self.character.hp_now-=dama
-                if man == True:
-                    print(f'{dama}만큼의 마법피해를 입었습니다.')
-                else:
-                    print(f'{dama}만큼의 물리피해를 입었습니다.')
-    
-    def end_turn(self):
-        if self.monster.mon_hp <= 0:
-            print(f'{self.monster.mon_name}을 물리쳤다.')
-            print(f'{self.monster.gain_exp}의 경험치를 얻었다.')
-            self.character.exp+=self.monster.gain_exp
-            self.character.judge_level()
-            self.battle_end=True
-            return self.battle_end
-        if self.character.hp_now <= 0:
-            print(f'사망했습니다.')
-            self.character.hp_now=self.character.hp
-            self.character.mp_now=self.character.mp
-            self.battle_end=True
-            return self.battle_end
+                print(f'{monster.mon_name}에게{damag}의 피해를 주었습니다.')
         else:
-            self.battle_end=False
-            return self.battle_end
+            print('Miss')
+
+        if avoid(character,monster) == True:
+            print('회피하였습니다.')
+        else:
+            dama,man=injury(character,monster)
+            character.hp_now-=dama
+            if man == True:
+                print(f'{dama}만큼의 마법피해를 입었습니다.')
+            else:
+                print(f'{dama}만큼의 물리피해를 입었습니다.')
+    elif turn == 1:
+        if hit(character,monster) == True:
+            damag,cri=damage(character,monster)
+            monster.mon_hp-=damag
+            if cri == True:
+                print(f'{monster.mon_name}{damag}!의 피해를 주었습니다.')
+            else:
+                print(f'{monster.mon_name}에게{damag}의 피해를 주었습니다.')
+        else:
+            print('Miss')
+    elif turn == 2:
+        if avoid(character,monster) == True:
+            print('회피하였습니다.')
+        else:
+            dama,man=injury(character,monster)
+            character.hp_now-=dama
+            if man == True:
+                print(f'{dama}만큼의 마법피해를 입었습니다.')
+            else:
+                print(f'{dama}만큼의 물리피해를 입었습니다.')
+    
+def end_turn(character,monster):
+    if monster.mon_hp <= 0:
+        print(f'{monster.mon_name}을 물리쳤다.')
+        print(f'{monster.gain_exp}의 경험치를 얻었다.')
+        character.exp+=monster.gain_exp
+        character.judge_level()
+        return True
+    if character.hp_now <= 0:
+        print(f'사망했습니다.')
+        character.hp_now=character.hp
+        character.mp_now=character.mp
+        return True
+    else:
+        return False
         
-    def turn_go(self):
-        while self.battle_end == False:
-            self.judge_turn(self.player_turn,self.mon_turn)
-            self.pro_turn()
-            self.end_turn()
-        return self.character.__dict__
-
+def turn_go(character,monster):
+    a,b=0,0
+    while end_turn(character,monster) == False:
+        re=judge_turn(character,monster,a,b)
+        a,b=re[1],re[2]
+        pro_turn(re[0],character,monster)
+        end_turn(character,monster)
+    
+def stat_up(character):
+    character.judge_level()
+    print(f'남은 ap포인트 : {character.ap}')
+    while True:
+        ans=input('무엇을 올립니까?\n1.힘\n2.민첩\n3.지력\n4.행운')
+        try:
+            int(ans)
 
 playe=character('eheh')
 
 for i in range(15):
     encount=monster()
-    i=battle(playe,playe.__dict__)
-    playe.load(i.turn_go())
-    playe.show_status()
+    turn_go(playe,encount)
     input()
 
 #class skill:
