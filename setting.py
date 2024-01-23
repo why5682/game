@@ -301,27 +301,29 @@ def battle(character,monste,num):
 
 def set_battle(character):
     while True:
-        ans = input('어떤 몬스터를 사냥하시겠습니까?\n1.취소\n')
-        if ans == '1':
-            print('사냥을 취소하고 마을로 돌아갑니다.')
-            break
         try:
+            ans = input('어떤 몬스터를 사냥하시겠습니까?\n1.취소\n')
             monster_book[ans]
+            if ans == '1':
+                print('사냥을 취소하고 마을로 돌아갑니다.')
+                break
+        except KeyError:
+            print('해당 몬스터가 존재하지 않습니다. 다시 입력하세요.')
+        else:
             while True:
-                how = input('몇 번 사냥하시겠습니까?\n')
                 try:
+                    how = input('몇 번 사냥하시겠습니까?\n')
                     how = int(how)
+                except ValueError:
+                    print('잘못된 입력입니다.')
+                else:
                     if how > 0:
                         battle(character, ans, how)
                         a=input('더 할래? 안할거면 1') #임시 조치
                         return a
                     else:
                         print('사냥 횟수는 양수여야 합니다. 다시 입력하세요.')
-                except ValueError:
-                    print('잘못된 입력입니다.')
-                break  # Exit the second while loop once a valid input is received
-        except KeyError:
-            print('해당 몬스터가 존재하지 않습니다. 다시 입력하세요.')
+                        #break
 
 
 
@@ -332,3 +334,4 @@ while a != '1':
 #class skill:
 
 #class item:
+
